@@ -44,7 +44,7 @@ class PdoBridge
     public function getLesMembres()
     {
         // modifiez la requête sql
-        $sql = 'SELECT id FROM membres';
+        $sql = 'SELECT id, nom, prenom FROM membres';
         $lesLignes = PdoBridge::$monPdo->query($sql);
         return $lesLignes->fetchALL(PDO::FETCH_ASSOC);
     }
@@ -52,10 +52,10 @@ class PdoBridge
     public function getMaxId()
     {
         // modifiez la requête sql
-        $req = "SELECT id AS maxi FROM membres";
+        $req = "SELECT max(id) AS id FROM membres";
         $res = PdoBridge::$monPdo->query($req);
-        $lesLignes = $res->fetch();
-        return 1 + intval($lesLignes["maxi"]);
+        $leID = $res->fetch();
+        return 1 + $leID["id"];
     }
 
     public function insertMembre($nom, $prenom)
@@ -63,7 +63,31 @@ class PdoBridge
         // modifiez la requête sql
         $id = $this->getMaxId();
         // modifiez la requête sql
-        $sql = 'INSERT INTO membres Value($id)';
+        $sql = "INSERT INTO membres(id,nom,prenom) Values($id,'$nom', '$prenom')";
         $req = PdoBridge::$monPdo->exec($sql);
     }
+    function modif_membres($nom, $prenom) 
+{
+	
+	$nb_lignes=0; 
+	
+	
+	$requete= "ALTER TABLE membres (nom,prenom) VALUES ('$nom','$prenom');";
+	
+	$reponse_serveur=mysqli_query($lien_base, "$requete");
+	if($reponse_serveur==false) 
+	{	
+		$message_erreur="Impossible d'executer la requete: $requete " . mysqli_error($lien_base);
+		echo $message_erreur;
+		die();
+		header("Location:404.php?erreur=$message_erreur"); 
+		exit(); 
+	}
+	else 
+	{
+		$nb_lignes=mysqli_affected_rows($lien_base); 
+
+	}
+	return $nb_lignes ;
+ }
 }

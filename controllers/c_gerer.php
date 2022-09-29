@@ -16,14 +16,20 @@ switch ($action) {
         require "views/v_saisie.php";
         break;
     }
+    case 'modifier': {
+        $les_membres=$pdo->getLesMembres();
+        require 'views/v_modifiermembres.php';
+        break;
+    }
     case 'controlesaisie':
     {
         $nom = $_REQUEST['nom'];
-        // affecter $prenom
+        $prenom = $_REQUEST['prenom'];
 
         if (empty($nom) || empty($prenom)) {
             require "views/v_saisie.php";
         } else {
+            $message = 'Membre enregistré';
             $resultat = $pdo->insertMembre($nom, $prenom);
             include("views/v_accueil.php");
         }
