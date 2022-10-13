@@ -9,3 +9,7 @@
   </div>
   <button type="submit" class="btn btn-primary">Ajouter</button>
 </form>
+<br>
+<ul>
+    <li><a href='index.php'>retour accueil</a></li>
+</ul>

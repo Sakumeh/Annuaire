@@ -43,15 +43,25 @@ class PdoBridge
 
     public function getLesMembres()
     {
-        // modifiez la requête sql
+    
         $sql = 'SELECT id, nom, prenom FROM membres';
         $lesLignes = PdoBridge::$monPdo->query($sql);
         return $lesLignes->fetchALL(PDO::FETCH_ASSOC);
     }
 
+    public function getLeMembre($id)
+    {
+        
+        $sql = 'SELECT id, nom, prenom FROM membres WHERE id = :id';
+        $laLigne = PdoBridge::$monPdo->prepare($sql);
+        $laLigne->bindParam(':id', $id);
+        $laLigne->execute();
+        return $laLigne->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function getMaxId()
     {
-        // modifiez la requête sql
+        
         $req = "SELECT max(id) AS id FROM membres";
         $res = PdoBridge::$monPdo->query($req);
         $leID = $res->fetch();
@@ -60,34 +70,44 @@ class PdoBridge
 
     public function insertMembre($nom, $prenom)
     {
-        // modifiez la requête sql
+        
+        //$id = $this->getMaxId();
+        //$sql = "INSERT INTO membres(id,nom,prenom) Values($id,'$nom', '$prenom')";
+        //$req = PdoBridge::$monPdo->exec($sql);
+
         $id = $this->getMaxId();
-        // modifiez la requête sql
-        $sql = "INSERT INTO membres(id,nom,prenom) Values($id,'$nom', '$prenom')";
+        $sql = "INSERT INTO membres(id,nom,prenom) Values(:id, :nom, :prenom)";
+        $req = PdoBridge::$monPdo->prepare($sql);
+        $req->bindParam(':id', $id);
+        $req->bindParam(':nom', $nom);
+        $req->bindParam(':prenom', $prenom);
+        $req->execute();
+    }
+    public function DeleteMembre($id)
+    {
+        $sql = "DELETE FROM membres WHERE id = '$id'";
         $req = PdoBridge::$monPdo->exec($sql);
     }
-    function modif_membres($nom, $prenom) 
-{
-	
-	$nb_lignes=0; 
-	
-	
-	$requete= "ALTER TABLE membres (nom,prenom) VALUES ('$nom','$prenom');";
-	
-	$reponse_serveur=mysqli_query($lien_base, "$requete");
-	if($reponse_serveur==false) 
+
+    function modifMembre($id, $nom, $prenom) 
+    {
+	$requete= "UPDATE membres SET nom = :nom, prenom = :prenom WHERE id = :id;";
+	$req = PdoBridge::$monPdo->prepare($requete);
+        $req->bindParam(':id', $id);
+        $req->bindParam(':nom', $nom);
+        $req->bindParam(':prenom', $prenom);
+        $req->execute();
+	if($req==false)
 	{	
-		$message_erreur="Impossible d'executer la requete: $requete " . mysqli_error($lien_base);
-		echo $message_erreur;
+		$message="Impossible d'executer la requete:". $requete ;
 		die();
-		header("Location:404.php?erreur=$message_erreur"); 
+		header("Location:views/v_accueil.php?erreur=$message"); 
 		exit(); 
 	}
 	else 
 	{
-		$nb_lignes=mysqli_affected_rows($lien_base); 
-
+		$req->fetch(PDO::FETCH_ASSOC); 
 	}
-	return $nb_lignes ;
- }
+	return $req; 
+    }
 }

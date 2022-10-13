@@ -10,7 +10,7 @@
         <a class="nav-link" href="index.php?uc=gerer&action=lister">Lister les membres</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" href="index.php?uc=gerer&action=modifier">Modifier un membre</a>
+        <a class="nav-link" href="index.php?uc=gerer&action=supprimer">Supprimer un membre</a>
     </li>
 </ul>
     </nav>
